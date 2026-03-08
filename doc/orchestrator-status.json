@@ -1,0 +1,9 @@
+{
+  "status": "error",
+  "currentTask": "Exception: D:\\01 Main Work\\Boots\\Agentic AI\\ai-orchestrator\\tools\\groq-orchestrator.ps1:841:9 Line |  841 |          thr…",
+  "currentLine": -1,
+  "cycle": 0,
+  "target": "D:\\01 Main Work\\Boots\\Agentic AI\\driveselect---get-booking",
+  "runDir": "D:\\01 Main Work\\Boots\\Agentic AI\\ai-orchestrator\\tools\\runs\\run_25690305_024616",
+  "timestamp": "2026-03-05T02:46:43.8921212+07:00"
+}

@@ -6,3 +6,11 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Tooling caches
+.claude/
+.wrangler/
+supabase/.temp/
+
+# Unrelated sibling projects (should not be inside this repo)
+ai-orchestrator/
