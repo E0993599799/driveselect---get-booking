@@ -697,6 +697,7 @@ export default function App() {
       car_license: selectedCar.license_plate ?? "",
       car_type: selectedCar.type,
       ...formData,
+      purpose: formData.objective,
       status: "pending",
     };
     const { car_id, ...payloadWithoutCarId } = bookingPayload;

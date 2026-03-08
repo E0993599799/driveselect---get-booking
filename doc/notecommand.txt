@@ -1,0 +1,6 @@
+$env:GROQ_MAX_PLAN_CHARS = "3000"
+$env:GROQ_MAX_TODO_CHARS = "2000"
+$env:GROQ_MAX_SCAN_CHARS = "2000"
+$env:GROQ_MAX_TASK_CHARS = "300"
+
+Groq /inini "D:\01 Main Work\Boots\Agentic AI\driveselect---get-booking\doc"
