@@ -297,15 +297,52 @@ export default function App() {
     };
 
     const initializeRecoverySession = async () => {
-      // PKCE: with detectSessionInUrl: true the SDK auto-calls exchangeCodeForSession()
-      // on createClient. This function just cleans up the URL if a code was present.
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get('code');
-      if (!code) return false;
-      // SDK has already exchanged the code — clean the URL
-      window.history.replaceState(null, '', window.location.pathname);
-      // onAuthStateChange fires PASSWORD_RECOVERY → setAuthMode('reset')
-      return true;
+      try {
+        // Check for recovery in fragment (PKCE) or legacy hash token
+        const hash = window.location.hash;
+        const isRecovery = hash.includes('type=recovery') || window.location.search.includes('type=recovery');
+        if (!isRecovery) return false;
+
+        // Try PKCE code exchange first
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+
+        if (code) {
+          // PKCE: SDK should have auto-exchanged, but verify session exists
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session?.user) {
+            console.error('PKCE code exchange failed: no session after getSession');
+            return false;
+          }
+          setAuthMode('reset');
+          window.history.replaceState(null, '', window.location.pathname);
+          return true;
+        }
+
+        // Fallback: legacy implicit flow (shouldn't reach here with PKCE enabled)
+        const hashParams = new URLSearchParams(hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+
+        if (accessToken && refreshToken) {
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          if (error) {
+            console.error('Failed to set recovery session:', error);
+            return false;
+          }
+          setAuthMode('reset');
+          window.history.replaceState(null, '', window.location.pathname);
+          return true;
+        }
+
+        return false;
+      } catch (err: any) {
+        console.error('Recovery session init error:', err);
+        return false;
+      }
     };
 
     // 2. Get initial session and check connection
