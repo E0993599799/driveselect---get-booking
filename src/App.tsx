@@ -297,30 +297,14 @@ export default function App() {
     };
 
     const initializeRecoverySession = async () => {
-      const hash = window.location.hash;
-      if (!hash || !hash.includes("type=recovery")) return false;
-
-      const params = new URLSearchParams(hash.substring(1));
-      const accessToken = params.get("access_token");
-      const refreshToken = params.get("refresh_token");
-
-      if (!accessToken || !refreshToken) {
-        setAuthMode("reset");
-        return true;
-      }
-
-      const { error } = await supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      });
-
-      if (error) {
-        console.error("Failed to set recovery session:", error);
-        return false;
-      }
-
-      setAuthMode("reset");
-      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+      // PKCE: with detectSessionInUrl: true the SDK auto-calls exchangeCodeForSession()
+      // on createClient. This function just cleans up the URL if a code was present.
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      if (!code) return false;
+      // SDK has already exchanged the code — clean the URL
+      window.history.replaceState(null, '', window.location.pathname);
+      // onAuthStateChange fires PASSWORD_RECOVERY → setAuthMode('reset')
       return true;
     };
 
